@@ -1,5 +1,5 @@
 /**
- * c8ctl-plugin-csap
+ * c8ctl-plugin-csap-cli
  *
  * Node.js port of the csap CLI (Camunda SAP Integration CLI) for the c8ctl
  * plugin system. Supports setup of:
@@ -165,7 +165,7 @@ async function getCredentials(flags, ctx) {
 
 async function githubRequest(path) {
   const headers = {
-    'User-Agent': 'c8ctl-plugin-csap',
+    'User-Agent': 'c8ctl-plugin-csap-cli',
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   };
@@ -730,6 +730,18 @@ function str(value) {
 
 // ── Plugin exports ────────────────────────────────────────────────────────────
 
+// Named exports for testing — ignored by the c8ctl plugin loader
+export {
+  buildConnector,
+  createBuildDir,
+  detectCredentials,
+  fetchReleases,
+  findLatestRelease,
+  getCredentials,
+  getCredentialsFromEnv,
+  warnIfGithubTokenMissing,
+};
+
 export const commands = {
   'csap-setup': {
     flags: {
@@ -779,7 +791,7 @@ export const commands = {
 };
 
 export const metadata = {
-  name: 'c8ctl-plugin-csap',
+  name: 'c8ctl-plugin-csap-cli',
   description: 'Set up Camunda SAP integration modules',
   commands: {
     'csap-setup': {

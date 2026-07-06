@@ -1,5 +1,5 @@
 {
-  "name": "c8ctl-plugin-csap",
+  "name": "c8ctl-plugin-csap-cli",
   "version": "1.2.3",
   "type": "module",
   "description": "c8ctl plugin for setting up Camunda SAP integration modules (OData connector, RFC connector, BTP plugin)",

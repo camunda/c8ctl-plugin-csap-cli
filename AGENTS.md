@@ -1,10 +1,10 @@
 # AGENTS.md
 
-This file is the implementation contract for autonomous coding agents and contributors working on `c8ctl-plugin-csap`.
+This file is the implementation contract for autonomous coding agents and contributors working on `c8ctl-plugin-csap-cli`.
 
 ## Role
 
-`c8ctl-plugin-csap` is a Node.js port of the [sap-csap-cli](https://github.com/camunda/sap-csap-cli) (originally Deno/TypeScript) as a plugin for the [c8ctl](https://github.com/camunda/c8ctl) CLI plugin system.
+`c8ctl-plugin-csap-cli` is a Node.js port of the [sap-csap-cli](https://github.com/camunda/sap-csap-cli) (originally Deno/TypeScript) as a plugin for the [c8ctl](https://github.com/camunda/c8ctl) CLI plugin system.
 
 It exposes a single command, `csap-setup`, that prepares one or more Camunda SAP integration modules for deployment:
 

@@ -6,8 +6,8 @@ const plugin = await import("./c8ctl-plugin.js");
 // ── Plugin structure ──────────────────────────────────────────────────────────
 
 describe("csap plugin — metadata", () => {
-	test('name is "c8ctl-plugin-csap"', () => {
-		assert.strictEqual(plugin.metadata.name, "c8ctl-plugin-csap");
+	test('name is "c8ctl-plugin-csap-cli"', () => {
+		assert.strictEqual(plugin.metadata.name, "c8ctl-plugin-csap-cli");
 	});
 
 	test("has a non-empty description", () => {
