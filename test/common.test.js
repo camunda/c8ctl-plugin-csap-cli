@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { warnIfGithubTokenMissing } from '../c8ctl-plugin.js';
+import { warnIfGithubTokenMissing } from '../lib/utils.js';
 
 describe('warnIfGithubTokenMissing', () => {
   test('emits a console.warn when GH_TOKEN is absent', (t) => {

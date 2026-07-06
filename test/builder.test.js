@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { buildConnector } from '../c8ctl-plugin.js';
+import { buildConnector } from '../lib/builder.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 

@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { mkdirSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { describe, test } from 'node:test';
-import { createBuildDir } from '../c8ctl-plugin.js';
+import { createBuildDir } from '../lib/utils.js';
 
 describe('createBuildDir', () => {
   test('returns a path under the system temp dir containing "camunda"', () => {

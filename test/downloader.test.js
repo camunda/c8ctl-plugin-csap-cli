@@ -3,7 +3,7 @@ import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, test } from 'node:test';
-import { fetchReleases, findLatestRelease } from '../c8ctl-plugin.js';
+import { fetchReleases, findLatestRelease } from '../lib/github.js';
 
 // ── findLatestRelease (pure — no network) ────────────────────────────────────
 

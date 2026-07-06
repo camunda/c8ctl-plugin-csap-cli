@@ -4,7 +4,7 @@ import {
   detectCredentials,
   getCredentials,
   getCredentialsFromEnv,
-} from '../c8ctl-plugin.js';
+} from '../lib/credentials.js';
 
 const ENV_VARS = {
   CAMUNDA_CLUSTER_ID: 'test-cluster-id',
