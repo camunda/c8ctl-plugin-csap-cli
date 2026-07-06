@@ -6,7 +6,7 @@
   "keywords": ["c8ctl", "c8ctl-plugin", "sap", "camunda", "csap"],
   "main": "c8ctl-plugin.js",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test --test-reporter=spec"
   },
   "engines": {
     "node": ">=22"
