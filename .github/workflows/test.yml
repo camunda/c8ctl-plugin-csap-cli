@@ -18,9 +18,8 @@ jobs:
       - name: Run tests
         run: npm run test:ci
       - name: Publish test results
-        uses: dorny/test-reporter@v1
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
-          name: Node.js Tests
-          path: test-results.xml
-          reporter: java-junit
+          report_paths: test-results.xml
+          check_name: Node.js Tests
