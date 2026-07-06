@@ -6,7 +6,11 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     permissions:
       contents: read
       checks: write
@@ -18,9 +22,11 @@ jobs:
           node-version: '22'
       - name: Run tests
         run: npm run test:ci
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish test results
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: test-results.xml
-          check_name: Node.js Tests
+          check_name: Node.js Tests (${{ matrix.os }})
