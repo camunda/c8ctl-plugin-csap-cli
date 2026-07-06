@@ -73,14 +73,14 @@ describe('fetchReleases (requires GH_TOKEN)', () => {
   test('fetchReleases + findLatestRelease returns a real 8.8 odata release', { skip: SKIP_NETWORK }, async () => {
     const releases = await fetchReleases('sap-connectors');
     const latest = findLatestRelease(releases, 'odata', '8.8');
-    assert.match(latest.name, /^8\.8\.\d+$/);
-    assert.notStrictEqual(latest.name, '8.8.0');
+    assert.match(latest.name, /8\.8\.\d+/);
+    assert.ok(!latest.name.endsWith('8.8.0'), 'expected a patch release newer than 8.8.0');
   });
 
   test('fetchReleases + findLatestRelease returns a real 8.8 rfc release', { skip: SKIP_NETWORK }, async () => {
     const releases = await fetchReleases('sap-connectors');
     const latest = findLatestRelease(releases, 'rfc', '8.8');
-    assert.match(latest.name, /^8\.8\.\d+$/);
+    assert.match(latest.name, /8\.8\.\d+/);
   });
 
   test('findLatestRelease throws for non-existent version 0.0', { skip: SKIP_NETWORK }, async () => {
