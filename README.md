@@ -1,6 +1,8 @@
 # c8ctl-plugin-csap-cli
 
-A [c8ctl](https://github.com/camunda/c8ctl) plugin that sets up Camunda's SAP integration modules for deployment. It is a Node.js port of the [sap-csap-cli](https://github.com/camunda/sap-csap-cli) (originally written in Deno).
+This is a **plugin for [c8ctl](https://github.com/camunda/c8ctl)** — Camunda's official CLI tool (`npm install @camunda8/cli -g`). Plugins extend c8ctl with additional commands; once loaded, `csap-setup` appears alongside the built-in commands and works the same way.
+
+`c8ctl-plugin-csap-cli` automates the setup of Camunda's SAP integration modules. It downloads release assets, fills in configuration templates with your credentials, and — for the BTP plugin — runs the full build pipeline to produce a deployable artifact. It is a Node.js port of the [sap-csap-cli](https://github.com/camunda/sap-csap-cli) (originally written in Deno), eliminating the need for a separate Deno installation.
 
 Full documentation: [docs.camunda.io › SAP › csap-cli](https://docs.camunda.io/docs/components/camunda-integrations/sap/csap-cli/)
 
@@ -15,7 +17,7 @@ Full documentation: [docs.camunda.io › SAP › csap-cli](https://docs.camunda.
 
 ## Prerequisites
 
-- [c8ctl](https://github.com/camunda/c8ctl) ≥ the version that introduced the plugin system
+- [c8ctl](https://github.com/camunda/c8ctl) installed (`npm install @camunda8/cli -g`)
 - Node.js ≥ 22
 - `git` in `PATH` (required for the BTP plugin flow)
 - `npm` in `PATH` (required for the BTP plugin build)
@@ -23,17 +25,35 @@ Full documentation: [docs.camunda.io › SAP › csap-cli](https://docs.camunda.
 
 ## Installation
 
+### From npm (recommended)
+
 ```bash
 c8ctl load plugin c8ctl-plugin-csap-cli
 ```
 
-To load a local development build:
+### From a Git repository
+
+```bash
+c8ctl load plugin --from https://github.com/camunda/c8ctl-plugin-csap-cli
+```
+
+To pin to a specific branch or tag, append `#`:
+
+```bash
+# Specific branch
+c8ctl load plugin --from https://github.com/camunda/c8ctl-plugin-csap-cli#main
+
+# Specific tag / release
+c8ctl load plugin --from https://github.com/camunda/c8ctl-plugin-csap-cli#v1.0.0
+```
+
+### From a local directory
 
 ```bash
 c8ctl load plugin --from file://${PWD}
 ```
 
-Verify the command is available:
+### Verify
 
 ```bash
 c8ctl help
