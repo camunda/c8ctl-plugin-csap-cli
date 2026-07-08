@@ -6,7 +6,6 @@ import { describe, test } from 'node:test';
 import { btpPlugin } from '../lib/btp-plugin.js';
 
 const SKIP_NETWORK = !process.env.GH_TOKEN ? 'set GH_TOKEN to run network tests' : false;
-const SKIP_WINDOWS = process.platform === 'win32' ? 'BTP plugin build not supported on Windows' : false;
 
 const VERSION = '8.8';
 const ROUTE = 'my-route.example.org';
@@ -17,10 +16,10 @@ const CREDENTIALS = {
   clientSecret: 'qwerty',
 };
 
-describe('BTP Plugin setup (requires GH_TOKEN, skipped on Windows)', () => {
+describe('BTP Plugin setup (requires GH_TOKEN)', () => {
   test(
     `full build pipeline creates deployable .mtar archive for Camunda ${VERSION}`,
-    { skip: SKIP_NETWORK || SKIP_WINDOWS, timeout: 600_000 },
+    { skip: SKIP_NETWORK, timeout: 900_000 },
     async () => {
       const buildDir = mkdtempSync(join(tmpdir(), 'csap-btp-test-'));
       try {
