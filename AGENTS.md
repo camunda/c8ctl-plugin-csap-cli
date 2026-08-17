@@ -58,6 +58,12 @@ Assets for the OData and RFC connectors are fetched from GitHub Releases on `cam
 
 The BTP plugin flow clones `camunda/sap-btp-plugin` then runs a full build pipeline (npm install → npm run build -w core → npm run build -w fiori-app → npx mbt build). This mutates the working directory: `buildBtpPlugin()` calls `process.chdir(inDir)` and the original CWD is restored in a `finally` block. If the target directory exists and is dirty or contains prior build artifacts, it is purged and re-cloned.
 
+### Cross-platform npm/npx invocation
+
+`buildBtpPlugin()` shells out to `npm`/`npx` (`npm ci`/`npm install`, two `npm run build -w …` steps, `npx mbt build`). On Windows, bare `spawnSync('npm', …)` fails unless `shell: true` is set, since Node's `.cmd` shim resolution requires a shell there. This is handled by the `SHELL = process.platform === 'win32'` flag near the top of `lib/btp-plugin.js`, passed as `shell: SHELL` to every npm/npx `spawnSync` call.
+
+**Heads-up:** c8ctl has announced (as part of its own native Windows support) that it will expose an official cross-platform npm wrapper for plugins to consume (e.g. `ctx.npm({ args, stdio })`), specifically so plugins stop reimplementing this themselves. Once that lands, replace the manual `SHELL`/`spawnSync('npm'|'npx', …)` calls in `lib/btp-plugin.js` with the official wrapper and drop the local workaround. This plugin only consumes the c8ctl runtime (it doesn't implement a c8ctl-defined interface), so the announced breaking change itself does not block anything here — this note is a migration TODO, not an urgent fix.
+
 ### Interactive prompts
 
 `promptSelect()` uses `ctx.prompt.select(...)` (c8ctl's prompt API) and falls back to the first option when `ctx` is absent (e.g. in tests). `inputPrompt()` uses `readline` directly and falls back to `defaultValue` in non-TTY environments (CI, `--yes` mode).
