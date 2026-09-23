@@ -21,7 +21,7 @@ export const commands = {
       },
       camunda: {
         type: 'string',
-        description: 'Camunda version: 8.6 | 8.7 | 8.8 | 8.9',
+        description: 'Camunda version: 8.7 | 8.8 | 8.9 | 8.10',
       },
       deployment: {
         type: 'string',

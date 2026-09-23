@@ -71,7 +71,7 @@ c8ctl csap-setup [options]
 | Flag | Description |
 |---|---|
 | `--for` | Module to set up: `odata` \| `rfc` \| `btp-plugin` \| `all` |
-| `--camunda` | Camunda version: `8.6` \| `8.7` \| `8.8` \| `8.9` |
+| `--camunda` | Camunda version: `8.7` \| `8.8` \| `8.9` \| `8.10` |
 | `--deployment` | Deployment type (currently only `SaaS`) |
 | `--clusterId` | Camunda Cluster ID |
 | `--region` | Camunda Cluster Region (e.g. `bru-2`) |
