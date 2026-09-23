@@ -1,31 +1,35 @@
+### This is currently not used. We should start using it however
 _schema-version: 3.3.0
-ID: sap-odata-connector-<app-version>
-version: '<app-version>'
+ID: odata-camunda-odata-connector
+version: "8.8.1"
 modules:
-- name: sap-odata-connector
+- name: sap-odata-connector-8.8.1
   type: application
   properties:
     CAMUNDA_CLIENT_MODE: saas
-    CAMUNDA_CLIENT_CLUSTER-ID: <your-cluster-id>
-    CAMUNDA_CLIENT_AUTH_CLIENT-ID: <client-id-credential-from-api-client>
-    CAMUNDA_CLIENT_AUTH_CLIENT-SECRET: <client-secret-credential-from-api-client>
-    CAMUNDA_CLIENT_REGION: <your-cluster-region>
-    CAMUNDA_CLIENT_OPERATE_ENABLED: false
+    CAMUNDA_CLIENT_CLOUD_DOMAIN: camunda.io
+    CAMUNDA_CLIENT_CLOUD_REGION: bru-2
+    CAMUNDA_CLIENT_CLOUD_CLUSTERID: xxx
+    CAMUNDA_CLIENT_AUTH_CLIENTID: yyy
+    CAMUNDA_CLIENT_AUTH_CLIENTSECRET: zzz
+    CAMUNDA_CLIENT_ENABLED: true
+    # CAMUNDA_CLIENT_ZEEBE_PREFERRESTOVERGRPC: true
     CAMUNDA_CONNECTOR_POLLING_ENABLED: false
     CAMUNDA_CONNECTOR_WEBHOOK_ENABLED: false
+    CAMUNDA_CONNECTOR_SECRETPROVIDER_CONSOLE_ENABLED: true
     LOGGING_LEVEL_ROOT: WARN # any of TRACE, DEBUG, INFO, WARN, ERROR, OFF
     LOGGING_LEVEL_IO_CAMUNDA_CONNECTOR_SAP: DEBUG # any of TRACE, DEBUG, INFO, WARN, ERROR, OFF
   requires:
     - name: dest-camunda-odata-connector
     - name: conn-camunda-odata-connector
   parameters:
-    disk-quota: 512M
+    disk-quota: 2G
     docker:
-      image: camunda/sap-odata-connector:<pick your version according to Camunda release, e.g. 8.6.1>
+      image: camunda/sap-odata-connector:8.8.1
     enable-ssh: true
     health-check-type: process
     instances: 1
-    memory: 2G
+    memory: 1G
 resources:
   - name: dest-camunda-odata-connector
     type: org.cloudfoundry.managed-service

@@ -7,29 +7,38 @@ import { fetchReleases, findLatestRelease } from '../lib/github.js';
 
 // ── findLatestRelease (pure — no network) ────────────────────────────────────
 
+// Shaped like real camunda/sap-connectors releases: `name` is a human-readable
+// display string ("OData 8.8.0"), never equal to the semver embedded in the tag.
 const MOCK_RELEASES = [
-  { tag_name: 'odata-8.8.0', name: '8.8.0', assets: [] },
-  { tag_name: 'odata-8.8.1', name: '8.8.1', assets: [] },
-  { tag_name: 'odata-8.8.2', name: '8.8.2', assets: [] },
-  { tag_name: 'odata-8.7.3', name: '8.7.3', assets: [] },
-  { tag_name: 'rfc-8.8.0', name: '8.8.0', assets: [] },
-  { tag_name: 'rfc-8.8.1', name: '8.8.1', assets: [] },
+  { tag_name: 'odata-8.8.0', name: 'OData 8.8.0', assets: [] },
+  { tag_name: 'odata-8.8.1', name: 'OData 8.8.1', assets: [] },
+  { tag_name: 'odata-8.8.2', name: 'OData 8.8.2', assets: [] },
+  { tag_name: 'odata-8.7.3', name: 'OData 8.7.3', assets: [] },
+  { tag_name: 'rfc-8.8.0', name: 'RFC 8.8.0', assets: [] },
+  { tag_name: 'rfc-8.8.1', name: 'RFC 8.8.1', assets: [] },
 ];
 
 describe('findLatestRelease', () => {
   test('returns the highest patch release for the given major.minor', () => {
     const release = findLatestRelease(MOCK_RELEASES, 'odata', '8.8');
-    assert.strictEqual(release.name, '8.8.2');
+    assert.strictEqual(release.semver, '8.8.2');
   });
 
   test('filters by submodule — odata tags do not count for rfc', () => {
     const release = findLatestRelease(MOCK_RELEASES, 'rfc', '8.8');
-    assert.strictEqual(release.name, '8.8.1');
+    assert.strictEqual(release.semver, '8.8.1');
   });
 
   test('only returns releases for the requested major.minor', () => {
     const release = findLatestRelease(MOCK_RELEASES, 'odata', '8.7');
-    assert.strictEqual(release.name, '8.7.3');
+    assert.strictEqual(release.semver, '8.7.3');
+  });
+
+  test('derives a clean semver from tag_name, distinct from the display name', () => {
+    const release = findLatestRelease(MOCK_RELEASES, 'odata', '8.8');
+    assert.strictEqual(release.semver, '8.8.2');
+    assert.strictEqual(release.name, 'OData 8.8.2');
+    assert.notStrictEqual(release.semver, release.name);
   });
 
   test('throws when no matching release exists', () => {
@@ -73,14 +82,14 @@ describe('fetchReleases (requires GH_TOKEN)', () => {
   test('fetchReleases + findLatestRelease returns a real 8.8 odata release', { skip: SKIP_NETWORK }, async () => {
     const releases = await fetchReleases('sap-connectors');
     const latest = findLatestRelease(releases, 'odata', '8.8');
-    assert.match(latest.name, /8\.8\.\d+/);
-    assert.ok(!latest.name.endsWith('8.8.0'), 'expected a patch release newer than 8.8.0');
+    assert.match(latest.semver, /^8\.8\.\d+$/);
+    assert.ok(!latest.semver.endsWith('8.8.0'), 'expected a patch release newer than 8.8.0');
   });
 
   test('fetchReleases + findLatestRelease returns a real 8.8 rfc release', { skip: SKIP_NETWORK }, async () => {
     const releases = await fetchReleases('sap-connectors');
     const latest = findLatestRelease(releases, 'rfc', '8.8');
-    assert.match(latest.name, /8\.8\.\d+/);
+    assert.match(latest.semver, /^8\.8\.\d+$/);
   });
 
   test('findLatestRelease throws for non-existent version 0.0', { skip: SKIP_NETWORK }, async () => {

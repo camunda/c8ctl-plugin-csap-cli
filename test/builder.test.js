@@ -25,6 +25,7 @@ describe('buildConnector — sap-odata-connector', () => {
       test(`generates correct mtad.yaml for ${submodule} ${version}`, () => {
         const assetLocation = join(assetDir, version);
         const generatedPath = join(assetLocation, 'mtad.yaml');
+        const targetDir = join(assetLocation, 'target');
 
         try {
           buildConnector(assetLocation, version, CREDENTIALS, submodule);
@@ -37,8 +38,17 @@ describe('buildConnector — sap-odata-connector', () => {
             expected,
             `Generated mtad.yaml does not match expected for ${submodule} ${version}`,
           );
+
+          if (submodule === 'rfc') {
+            const relocatedWar = join(targetDir, `rfc-${version}.war`);
+            assert.ok(
+              existsSync(relocatedWar),
+              `expected ${relocatedWar} to exist — mtad.yaml's "path: target/rfc-${version}.war" must resolve on disk`,
+            );
+          }
         } finally {
           if (existsSync(generatedPath)) rmSync(generatedPath);
+          if (existsSync(targetDir)) rmSync(targetDir, { recursive: true });
         }
       });
     }

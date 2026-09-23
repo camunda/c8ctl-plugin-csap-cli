@@ -1,10 +1,10 @@
 _schema-version: 3.3.0
-ID: rfc-<deployment-name>
-version: "<app-version>"
+ID: rfc-camunda-rfc-connector
+version: "8.8.1"
 modules:
   - name: sap-rfc-connector
     type: java.tomcat
-    path: target/rfc-<app-version>.war
+    path: target/rfc-8.8.1.war
     properties:
       JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 21.+ }'
       LOGGING_LEVEL_COM_SAP_CLOUD_SDK: DEBUG # any of TRACE, DEBUG, INFO, WARN, ERROR, OFF
@@ -13,18 +13,21 @@ modules:
       LOGGING_LEVEL_ROOT: WARN # any of TRACE, DEBUG, INFO, WARN, ERROR, OFF
       SPRING_PROFILES_ACTIVE: cloud
       USE_JCO: true
-      ZEEBE_CLIENT_CLOUD_REGION: <region-id>
-      ZEEBE_CLIENT_CLOUD_CLUSTERID: <cluster-id>
-      ZEEBE_CLIENT_CLOUD_CLIENTID: <client-id>
-      ZEEBE_CLIENT_CLOUD_CLIENTSECRET: <client-secret>
+      CAMUNDA_CLIENT_MODE: saas
+      CAMUNDA_CLIENT_CLOUD_DOMAIN: camunda.io
+      CAMUNDA_CLIENT_CLOUD_REGION: bru-2
+      CAMUNDA_CLIENT_CLOUD_CLUSTERID: xxx
+      CAMUNDA_CLIENT_AUTH_CLIENTID: yyy
+      CAMUNDA_CLIENT_AUTH_CLIENTSECRET: zzz
+      CAMUNDA_CLIENT_ENABLED: true
       # CAMUNDA_CLIENT_ZEEBE_PREFERRESTOVERGRPC: true
       CAMUNDA_CONNECTOR_POLLING_ENABLED: false
       CAMUNDA_CONNECTOR_WEBHOOK_ENABLED: false
       CAMUNDA_CONNECTOR_SECRETPROVIDER_CONSOLE_ENABLED: true
     requires:
-      - name: uaa-<deployment-name>
-      - name: dest-<deployment-name>
-      - name: conn-<deployment-name>
+      - name: uaa-camunda-rfc-connector
+      - name: dest-camunda-rfc-connector
+      - name: conn-camunda-rfc-connector
     parameters:
       buildpack: sap_java_buildpack_jakarta
       disk-quota: 2G
@@ -36,20 +39,20 @@ modules:
         - protocol: http2
           route: ${default-uri}
 resources:
-  - name: uaa-<deployment-name>
+  - name: uaa-camunda-rfc-connector
     type: org.cloudfoundry.managed-service
     parameters:
       config:
         tenant-mode: dedicated
-        xsappname: rfc-<deployment-name>
+        xsappname: rfc-camunda-rfc-connector
       service: xsuaa
       service-plan: application
-  - name: dest-<deployment-name>
+  - name: dest-camunda-rfc-connector
     type: org.cloudfoundry.managed-service
     parameters:
       service: destination
       service-plan: lite
-  - name: conn-<deployment-name>
+  - name: conn-camunda-rfc-connector
     type: org.cloudfoundry.managed-service
     parameters:
       service: connectivity

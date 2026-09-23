@@ -1,0 +1,151 @@
+_schema-version: "3.1"
+ID: camunda-btp-plugin-<app-version>
+version: <unique-app-version>
+description: "BTP Plugin, part of Camunda's SAP Integration"
+parameters:
+  enable-parallel-deployments: true
+
+modules:
+  # app-router acting as primary traffic distributor
+  - name: btp-plugin-router
+    type: approuter.nodejs
+    path: router
+    parameters:
+      disk-quota: 2G
+      memory: 256M
+      enable-ssh: true
+      routes: 
+        - route: <btp-plugin-route>
+        # - route: <btp-plugin-route>.${default-domain}
+    properties:
+      # 15 minutes
+      INCOMING_CONNECTION_TIMEOUT: 900000
+    requires:
+      - name: uaa-camunda-btp-plugin
+      - name: dest-camunda-btp-plugin
+      - name: conn-camunda-btp-plugin
+      - name: srv-binding
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: srv_api
+          url: "~{srv-url}"
+      - name: ui-binding
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: ui
+          url: "~{ui-url}"
+    build-parameters:
+      ignore: ["xs-dev.json", "default-env.json"]
+      builder: custom
+      commands:
+        - npm install --production
+
+
+  - name: btp-plugin-srv
+    type: nodejs
+    path: core/gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      disk-quota: 2G
+      memory: 512M
+      enable-ssh: true
+    properties:
+      ZEEBE_ADDRESS: <your-cluster-id>.<your-cluster-region>.zeebe.camunda.io:443
+      ZEEBE_CLIENT_ID: <client-id-credential-from-api-client>
+      ZEEBE_CLIENT_SECRET: <client-secret-credential-from-api-client>
+      # ZEEBE_AUTHORIZATION_SERVER_URL: xxx
+      # ZEEBE_REST_ADDRESS: xxx
+      # ZEEBE_GRPC_ADDRESS: xxx
+      # ZEEBE_TOKEN_AUDIENCE: xxx
+      CAMUNDA_CLUSTER_ID: <your-cluster-id>
+      CAMUNDA_CLIENT_ID: <client-id-credential-from-api-client>
+      CAMUNDA_CLIENT_SECRET: <client-secret-credential-from-api-client>
+      CAMUNDA_CLUSTER_REGION: <your-cluster-region>
+      CAMUNDA_CREDENTIALS_SCOPES: Zeebe,Tasklist,Operate,Optimize,Secrets
+      CAMUNDA_TASKLIST_BASE_URL: https://<your-cluster-region>.tasklist.camunda.io/<your-cluster-id>
+      CAMUNDA_OPTIMIZE_BASE_URL: https://<your-cluster-region>.optimize.camunda.io/<your-cluster-id>
+      CAMUNDA_OPERATE_BASE_URL: https://<your-cluster-region>.operate.camunda.io/<your-cluster-id>
+      CAMUNDA_OAUTH_URL: https://login.cloud.camunda.io/oauth/token
+    build-parameters:
+      builder: custom
+      commands:
+        # only an informative placeholder because nothing needs to be done
+        - make -v
+    requires:
+      - name: uaa-camunda-btp-plugin
+      - name: dest-camunda-btp-plugin
+      - name: conn-camunda-btp-plugin
+      - name: camunda-btp-plugin-postgres
+    provides:
+      - name: srv-binding 
+        properties:
+          srv-url: ${default-url}
+  
+  - name: camunda-btp-plugin-postgres-deployer
+    type: nodejs
+    path: core/gen/pg
+    parameters:
+      disk-quota: 2G
+      memory: 512M
+      buildpack: nodejs_buildpack
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-to-postgresql
+          command: npm start
+    requires:
+      - name: camunda-btp-plugin-postgres
+
+
+  - name: btp-plugin-ui
+    type: html5
+    path: fiori-app
+    parameters:
+      disk-quota: 2G
+      memory: 256M
+      enable-ssh: true
+    build-parameters:
+      builder: custom
+      commands:
+        # only an informative placeholder because nothing needs to be done
+         - make -v 
+    requires:
+      - name: uaa-camunda-btp-plugin
+      - name: dest-camunda-btp-plugin
+      - name: conn-camunda-btp-plugin
+    provides:
+      - name: ui-binding 
+        properties:
+          ui-url: ${default-url}
+
+
+resources:
+  - name: uaa-camunda-btp-plugin
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: camunda-btp-plugin-<app-version>
+        tenant-mode: dedicated
+  - name: dest-camunda-btp-plugin
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service-plan: lite
+      service: destination
+  - name: conn-camunda-btp-plugin
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service-plan: lite
+      service: connectivity
+  - name: camunda-btp-plugin-postgres
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: postgresql-db
+      path: ./core/pg-options.json
+      service-plan: standard
+      skip-service-updates:
+        parameters: true

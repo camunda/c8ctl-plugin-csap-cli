@@ -104,7 +104,13 @@ npm test
 node --test c8ctl-plugin.test.js
 ```
 
-The test suite covers plugin structure only (metadata shape, commands export, flags shape). It deliberately does not invoke the handler — doing so would trigger GitHub API calls, `git clone`, and `npm install`. Keep it that way: handler correctness is validated manually via the development loop above.
+The suite has three layers:
+
+1. **Plugin structure** (`c8ctl-plugin.test.js`) — metadata shape, commands export, flags shape. Does not invoke the handler.
+2. **Unit tests per module** (`test/*.test.js`) — pure logic (`findLatestRelease`, `buildConnector`, credential resolution, `createBuildDir`, …) plus a few tests gated on `GH_TOKEN`/network that exercise the real GitHub API and the real `git`/`npm`/`mbt` pipeline end-to-end. These are skipped in environments without `GH_TOKEN` and are not part of the fast CI path.
+3. **Offline e2e tests** (`test/setup-handler.e2e.test.js`) — invoke `setupHandler` itself, non-interactively (`--yes`, all flags supplied, no TTY), once per module (`odata`, `rfc`, `btp-plugin`, `all`). The remote side is stubbed via `test/helpers/mockGithub.js` (mocks `fetch` against recorded release JSON + small fixture assets under `test/__fixtures__/`) and `test/helpers/mockChildProcess.js` (mocks `cp.spawnSync` so `git clone`/`npm`/`npx mbt build` never run for real). These run unconditionally in CI — no `GH_TOKEN`, no network, no real clone/build. They assert on the *generated* `mtad.yaml`/`mta.yaml` content (no leftover `<...>` placeholders, no spaces in `version:`/`name:`/the docker image tag, `version:` is a clean semver, every `path:` resolves to a file that exists on disk, and — for `--for all` — that the odata and rfc MTAs don't share resource names), not just on directory existence.
+
+Note: `lib/btp-plugin.js` imports `child_process` as `import cp from 'node:child_process'` (not `{ spawnSync }`) specifically so `cp.spawnSync` is mockable — a named import binds before a test's mock is installed and never observes the replacement.
 
 ## Quality Checks
 
