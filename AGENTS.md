@@ -12,7 +12,7 @@ It exposes a single command, `csap-setup`, that prepares one or more Camunda SAP
 |---|---|---|
 | OData connector | `odata` | Interact with S/4HANA or ECC from a BPMN model |
 | RFC connector | `rfc` | Query BAPIs & Remote Function Modules on SAP ECC |
-| BTP plugin | `btp-plugin` | Render task forms in Fiori, provide BTP integration |
+| BTP plugin (deprecated) | `btp-plugin` | Render task forms in Fiori, provide BTP integration |
 | All | `all` | Configure all three modules |
 
 ## Plugin Contract
@@ -54,7 +54,9 @@ All flags on `csap-setup` are `type: 'string'`. Do not use flag names that confl
 
 Assets for the OData and RFC connectors are fetched from GitHub Releases on `camunda/sap-connectors`. A `GH_TOKEN` env var is recommended to avoid rate limiting; a warning is emitted if absent. The `downloadAsset()` function skips files that already exist with the correct size.
 
-### BTP Plugin
+### BTP Plugin (deprecated)
+
+**This module is deprecated** and will be removed in a future release. `btpPlugin()` in `lib/btp-plugin.js` logs a deprecation warning on every run; the label in `SAP_MODULES` (`lib/constants.js`) is suffixed `(deprecated)`. Don't add new features to this flow — bug fixes only.
 
 The BTP plugin flow clones `camunda/sap-btp-plugin` then runs a full build pipeline (npm install → npm run build -w core → npm run build -w fiori-app → npx mbt build). This mutates the working directory: `buildBtpPlugin()` calls `process.chdir(inDir)` and the original CWD is restored in a `finally` block. If the target directory exists and is dirty or contains prior build artifacts, it is purged and re-cloned.
 

@@ -12,7 +12,7 @@ Full documentation: [docs.camunda.io › SAP › csap-cli](https://docs.camunda.
 |---|---|---|
 | OData connector | `odata` | Interact with S/4HANA or ECC from a BPMN model |
 | RFC connector | `rfc` | Query BAPIs & Remote Function Modules on SAP ECC |
-| BTP plugin | `btp-plugin` | Render task forms in Fiori, provide BTP integration |
+| BTP plugin ⚠️ **deprecated** | `btp-plugin` | Render task forms in Fiori, provide BTP integration |
 | All | `all` | Configure all three modules |
 
 ## Prerequisites
@@ -129,7 +129,9 @@ c8ctl csap-setup --for odata --camunda 8.9
 
 Downloads the release assets for the requested Camunda version from [camunda/sap-connectors](https://github.com/camunda/sap-connectors) on GitHub, fills in the `mtad.yaml.example` template with your credentials, and writes a ready-to-deploy `mtad.yaml` to the target directory.
 
-### BTP plugin
+### BTP plugin ⚠️ deprecated
+
+> **Deprecated.** The BTP plugin module is deprecated and will be removed in a future release. Avoid new setups against it.
 
 1. Clones [camunda/sap-btp-plugin](https://github.com/camunda/sap-btp-plugin) at the requested branch
 2. Fills in `mta.yaml` and `xs-security.json` with your credentials and route

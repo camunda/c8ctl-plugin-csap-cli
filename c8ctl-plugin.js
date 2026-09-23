@@ -17,7 +17,7 @@ export const commands = {
     flags: {
       'for': {
         type: 'string',
-        description: 'SAP integration module: btp-plugin | odata | rfc | all',
+        description: 'SAP integration module: btp-plugin (deprecated) | odata | rfc | all',
       },
       camunda: {
         type: 'string',
@@ -70,7 +70,7 @@ export const metadata = {
         'Prepares one or more of Camunda\'s SAP integration modules for deployment:\n' +
         '  • OData connector — interact with S/4HANA or ECC from a BPMN model\n' +
         '  • RFC connector — query BAPIs & Remote Function Modules on SAP ECC\n' +
-        '  • BTP plugin — render task forms in Fiori, provide BTP integration\n\n' +
+        '  • BTP plugin (deprecated) — render task forms in Fiori, provide BTP integration\n\n' +
         'Credentials are read from --clusterId / --region / --clientId / --clientSecret flags,\n' +
         'from CAMUNDA_CLUSTER_ID / CAMUNDA_CLUSTER_REGION / CAMUNDA_CLIENT_ID / CAMUNDA_CLIENT_SECRET\n' +
         'environment variables, or prompted interactively.\n\n' +
