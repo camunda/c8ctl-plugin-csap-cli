@@ -138,6 +138,50 @@ Downloads the release assets for the requested Camunda version from [camunda/sap
 
 If the target directory already exists and is dirty or contains previous build artifacts, it is purged and re-cloned automatically.
 
+## Deployment
+
+`csap-setup` only **prepares** deployment artifacts — it does not deploy them. All three modules are SAP BTP MTA (Multi-Target Application) content, deployed with the Cloud Foundry CLI and the `multiapps` plugin.
+
+Every successful `csap-setup` run prints `in directory <path>` — that's the path to hand to `cf deploy` below.
+
+### Prerequisites
+
+- [Cloud Foundry CLI](https://github.com/cloudfoundry/cli) (`cf`)
+- The `multiapps` CF CLI plugin:
+  ```bash
+  cf install-plugin multiapps
+  ```
+- A login to the target BTP Cloud Foundry org/space:
+  ```bash
+  cf login -a https://api.cf.<region>.hana.ondemand.com -o <org> -s <space>
+  ```
+
+### OData connector & RFC connector
+
+No `.mtar` build step is involved — `csap-setup` writes a filled-in `mtad.yaml` directly next to the downloaded release assets. Point `cf deploy` at that directory; the `multiapps` plugin packages it into an MTA archive on the fly:
+
+```bash
+cf deploy <directory-printed-by-csap-setup>
+```
+
+### BTP plugin
+
+`csap-setup` already produces a ready-to-deploy `.mtar` archive in `mta_archives/` inside the printed directory:
+
+```bash
+cf deploy <directory-printed-by-csap-setup>/mta_archives/<name>.mtar
+```
+
+### Verify
+
+```bash
+cf apps                       # confirm the module(s) show up and are running
+cf routes                     # confirm the route matches --btpRoute (btp-plugin) or the connector's default route
+cf logs <app-name> --recent    # tail recent logs for a specific app
+```
+
+Managed service provisioning (destination, connectivity, xsuaa, and — for the BTP plugin — postgresql-db) can take several minutes on first deploy; `cf deploy` reports progress but won't appear to hang.
+
 ## GitHub API rate limiting
 
 Release assets are fetched from the GitHub API. Without authentication, requests are rate-limited to 60 per hour per IP address. Set `GH_TOKEN` to a personal access token with at least `public_repo` read access to raise this limit:
