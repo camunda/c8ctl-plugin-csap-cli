@@ -212,6 +212,8 @@ Network tests (those that call the GitHub API) are skipped automatically when `G
 
 The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against two supported Camunda versions, `8.9` and `8.7`. `8.6` is deprecated and intentionally left out of this coverage.
 
+`test/c8ctl-cli.e2e.test.js` covers the plugin through the real `c8ctl` binary instead of calling `lib/setup.js` directly — loading it from disk (`c8ctl load plugin --from file://...`), then dispatching `csap-setup`, so plugin registration and flag wiring are covered too. It runs in a sandboxed `HOME`/config dir to avoid touching your real c8ctl installation, and requires `c8ctl` on `PATH`; its network-hitting case additionally requires `GH_TOKEN`. CI installs a pinned `c8ctl` version before running tests (see `.github/workflows/test.yml`).
+
 ## Related
 
 - [sap-csap-cli](https://github.com/camunda/sap-csap-cli) — the original Deno implementation

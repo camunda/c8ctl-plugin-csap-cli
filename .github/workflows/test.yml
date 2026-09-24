@@ -24,6 +24,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install c8ctl CLI
+        # Pinned to the version the c8ctl-cli.e2e.test.js integration test was
+        # verified against; bump deliberately, not automatically.
+        run: npm install -g @camunda8/cli@3.2.0
       - name: Run tests
         run: npm run test:ci
         env:
