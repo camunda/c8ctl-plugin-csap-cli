@@ -11,7 +11,15 @@ import { isC8ctlAvailable, runC8ctl, sandboxEnv } from './helpers/c8ctlCli.js';
 // flag wiring and plugin registration are covered too, not just the core logic.
 const REPO_ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 
-const SKIP_NO_CLI = !isC8ctlAvailable() ? 'c8ctl CLI not found on PATH' : false;
+// c8ctl@3.2.0's `load plugin` shells out via spawnSync('npm', ...) without
+// `shell: true`; on Windows npm is a .cmd shim, so that spawnSync call fails
+// with ENOENT. That's a bug in the c8ctl binary itself, not in this plugin —
+// skip there until it's fixed upstream.
+const SKIP_WINDOWS = process.platform === 'win32'
+  ? 'c8ctl@3.2.0 "load plugin" fails on Windows (spawnSync npm ENOENT) — upstream c8ctl bug, not this plugin'
+  : false;
+
+const SKIP_NO_CLI = SKIP_WINDOWS || (!isC8ctlAvailable() ? 'c8ctl CLI not found on PATH' : false);
 const SKIP_NETWORK = SKIP_NO_CLI || (!process.env.GH_TOKEN ? 'set GH_TOKEN to run network tests' : false);
 
 const EXPECTED_FLAGS = [
