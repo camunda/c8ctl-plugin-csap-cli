@@ -208,6 +208,10 @@ c8ctl csap-setup --help
 
 Network tests (those that call the GitHub API) are skipped automatically when `GH_TOKEN` is not set. Set it to run the full suite.
 
+### Test coverage
+
+The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against two supported Camunda versions, `8.9` and `8.7`. `8.6` is deprecated and intentionally left out of this coverage.
+
 ## Related
 
 - [sap-csap-cli](https://github.com/camunda/sap-csap-cli) — the original Deno implementation

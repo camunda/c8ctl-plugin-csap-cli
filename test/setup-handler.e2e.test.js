@@ -18,6 +18,13 @@ import {
 const CAMUNDA_VERSION = '8.9';
 const RELEASE_SEMVER = '8.9.5';
 
+// Covers the connectors on a second, non-latest supported Camunda version
+// (8.6 is deprecated and intentionally left untested).
+const CAMUNDA_VERSIONS_UNDER_TEST = [
+  { camundaVersion: '8.9', releaseSemver: '8.9.5' },
+  { camundaVersion: '8.7', releaseSemver: '8.7.2' },
+];
+
 const CREDENTIALS_FLAGS = {
   clusterId: 'e2e-cluster-id',
   region: 'e2e-region',
@@ -25,8 +32,8 @@ const CREDENTIALS_FLAGS = {
   clientSecret: 'e2e-client-secret',
 };
 
-function mtadPathFor(to, submodule) {
-  return join(to, CAMUNDA_VERSION, 'sap-connectors', `${submodule}-${RELEASE_SEMVER}`, 'mtad.yaml');
+function mtadPathFor(to, submodule, camundaVersion = CAMUNDA_VERSION, releaseSemver = RELEASE_SEMVER) {
+  return join(to, camundaVersion, 'sap-connectors', `${submodule}-${releaseSemver}`, 'mtad.yaml');
 }
 
 function assertConnectorMtad(mtadPath, label) {
@@ -39,37 +46,39 @@ function assertConnectorMtad(mtadPath, label) {
 }
 
 describe('setupHandler — offline e2e (mocked GitHub releases + stubbed git/npm)', () => {
-  test('--for odata --yes: exits cleanly and produces a valid mtad.yaml', async (t) => {
-    installGithubMock(t);
-    const to = mkdtempSync(join(tmpdir(), 'csap-e2e-odata-'));
-    try {
-      await setupHandler(
-        {},
-        { for: 'odata', camunda: CAMUNDA_VERSION, deployment: 'SaaS', to, ...CREDENTIALS_FLAGS },
-        { yes: true },
-      );
+  for (const { camundaVersion, releaseSemver } of CAMUNDA_VERSIONS_UNDER_TEST) {
+    test(`--for odata --camunda ${camundaVersion} --yes: exits cleanly and produces a valid mtad.yaml`, async (t) => {
+      installGithubMock(t);
+      const to = mkdtempSync(join(tmpdir(), 'csap-e2e-odata-'));
+      try {
+        await setupHandler(
+          {},
+          { for: 'odata', camunda: camundaVersion, deployment: 'SaaS', to, ...CREDENTIALS_FLAGS },
+          { yes: true },
+        );
 
-      assertConnectorMtad(mtadPathFor(to, 'odata'), 'odata mtad.yaml');
-    } finally {
-      rmSync(to, { recursive: true, force: true });
-    }
-  });
+        assertConnectorMtad(mtadPathFor(to, 'odata', camundaVersion, releaseSemver), 'odata mtad.yaml');
+      } finally {
+        rmSync(to, { recursive: true, force: true });
+      }
+    });
 
-  test('--for rfc --yes: exits cleanly and produces a valid mtad.yaml', async (t) => {
-    installGithubMock(t);
-    const to = mkdtempSync(join(tmpdir(), 'csap-e2e-rfc-'));
-    try {
-      await setupHandler(
-        {},
-        { for: 'rfc', camunda: CAMUNDA_VERSION, deployment: 'SaaS', to, ...CREDENTIALS_FLAGS },
-        { yes: true },
-      );
+    test(`--for rfc --camunda ${camundaVersion} --yes: exits cleanly and produces a valid mtad.yaml`, async (t) => {
+      installGithubMock(t);
+      const to = mkdtempSync(join(tmpdir(), 'csap-e2e-rfc-'));
+      try {
+        await setupHandler(
+          {},
+          { for: 'rfc', camunda: camundaVersion, deployment: 'SaaS', to, ...CREDENTIALS_FLAGS },
+          { yes: true },
+        );
 
-      assertConnectorMtad(mtadPathFor(to, 'rfc'), 'rfc mtad.yaml');
-    } finally {
-      rmSync(to, { recursive: true, force: true });
-    }
-  });
+        assertConnectorMtad(mtadPathFor(to, 'rfc', camundaVersion, releaseSemver), 'rfc mtad.yaml');
+      } finally {
+        rmSync(to, { recursive: true, force: true });
+      }
+    });
+  }
 
   test('--for btp-plugin --yes: exits cleanly and produces a deployable .mtar', async (t) => {
     installGitAndNpmMock(t);
