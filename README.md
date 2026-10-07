@@ -8,12 +8,12 @@ Full documentation: [docs.camunda.io › SAP › csap-cli](https://docs.camunda.
 
 ## Supported modules
 
-| Module | Flag value | Description |
-|---|---|---|
-| OData connector | `odata` | Interact with S/4HANA or ECC from a BPMN model |
-| RFC connector | `rfc` | Query BAPIs & Remote Function Modules on SAP ECC |
+| Module                       | Flag value   | Description                                         |
+|------------------------------|--------------|-----------------------------------------------------|
+| OData connector              | `odata`      | Interact with S/4HANA or ECC from a BPMN model      |
+| RFC connector                | `rfc`        | Query BAPIs & Remote Function Modules on SAP ECC    |
 | BTP plugin ⚠️ **deprecated** | `btp-plugin` | Render task forms in Fiori, provide BTP integration |
-| All | `all` | Configure all three modules |
+| All                          | `all`        | Configure all three modules                         |
 
 ## Prerequisites
 
@@ -68,18 +68,18 @@ c8ctl csap-setup [options]
 
 ### Flags
 
-| Flag | Description |
-|---|---|
-| `--for` | Module to set up: `odata` \| `rfc` \| `btp-plugin` \| `all` |
-| `--camunda` | Camunda version: `8.6` \| `8.7` \| `8.8` \| `8.9` |
-| `--deployment` | Deployment type (currently only `SaaS`) |
-| `--clusterId` | Camunda Cluster ID |
-| `--region` | Camunda Cluster Region (e.g. `bru-2`) |
-| `--clientId` | OAuth2 Client ID from a Camunda API Client |
-| `--clientSecret` | OAuth2 Client Secret from a Camunda API Client |
-| `--btpRoute` | *(btp-plugin / all)* BTP route — host without `http(s)://` and trailing `/` |
+| Flag                | Description                                                                    |
+|---------------------|--------------------------------------------------------------------------------|
+| `--for`             | Module to set up: `odata` \| `rfc` \| `btp-plugin` \| `all`                    |
+| `--camunda`         | Camunda version: `8.6` (deprecated) \| `8.7` \| `8.8` \| `8.9` \| `8.10`       |
+| `--deployment`      | Deployment type (currently only `SaaS`)                                        |
+| `--clusterId`       | Camunda Cluster ID                                                             |
+| `--region`          | Camunda Cluster Region (e.g. `bru-2`)                                          |
+| `--clientId`        | OAuth2 Client ID from a Camunda API Client                                     |
+| `--clientSecret`    | OAuth2 Client Secret from a Camunda API Client                                 |
+| `--btpRoute`        | *(btp-plugin / all)* BTP route — host without `http(s)://` and trailing `/`    |
 | `--btpPluginBranch` | *(btp-plugin / all)* Git branch to clone the BTP plugin from (default: `main`) |
-| `--to` | Target directory for setup artifacts (default: OS temp directory) |
+| `--to`              | Target directory for setup artifacts (default: OS temp directory)              |
 
 All flags are optional. Any value not supplied via a flag is either read from environment variables or prompted for interactively.
 
@@ -210,7 +210,7 @@ Network tests (those that call the GitHub API) are skipped automatically when `G
 
 ### Test coverage
 
-The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against two supported Camunda versions, `8.9` and `8.7`. `8.6` is deprecated and intentionally left out of this coverage.
+The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against three supported Camunda versions, `8.10`, `8.9` and `8.7`. `8.6` is deprecated and intentionally left out of this coverage.
 
 `test/c8ctl-cli.e2e.test.js` covers the plugin through the real `c8ctl` binary instead of calling `lib/setup.js` directly — loading it from disk (`c8ctl load plugin --from file://...`), then dispatching `csap-setup`, so plugin registration and flag wiring are covered too. It runs in a sandboxed `HOME`/config dir to avoid touching your real c8ctl installation, and requires `c8ctl` on `PATH`; its network-hitting case additionally requires `GH_TOKEN`. CI installs a pinned `c8ctl` version before running tests (see `.github/workflows/test.yml`). It's skipped on Windows: `c8ctl@3.2.0`'s `load plugin` fails there with `spawnSync npm ENOENT` — an upstream bug in the c8ctl binary, not in this plugin.
 

@@ -18,9 +18,10 @@ import {
 const CAMUNDA_VERSION = '8.9';
 const RELEASE_SEMVER = '8.9.5';
 
-// Covers the connectors on a second, non-latest supported Camunda version
+// Covers the connectors on the latest and on older supported Camunda versions
 // (8.6 is deprecated and intentionally left untested).
 const CAMUNDA_VERSIONS_UNDER_TEST = [
+  { camundaVersion: '8.10', releaseSemver: '8.10.1' },
   { camundaVersion: '8.9', releaseSemver: '8.9.5' },
   { camundaVersion: '8.7', releaseSemver: '8.7.2' },
 ];

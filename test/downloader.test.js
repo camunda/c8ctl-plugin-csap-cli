@@ -41,6 +41,17 @@ describe('findLatestRelease', () => {
     assert.notStrictEqual(release.semver, release.name);
   });
 
+  test('treats 8.10 as its own minor version, distinct from 8.1 and 8.9', () => {
+    const releases = [
+      { tag_name: 'odata-8.1.7', name: 'OData 8.1.7', assets: [] },
+      { tag_name: 'odata-8.9.14', name: 'OData 8.9.14', assets: [] },
+      { tag_name: 'odata-8.10.1', name: 'OData 8.10.1', assets: [] },
+      { tag_name: 'odata-8.10.0', name: 'OData 8.10.0', assets: [] },
+    ];
+    assert.strictEqual(findLatestRelease(releases, 'odata', '8.10').semver, '8.10.1');
+    assert.strictEqual(findLatestRelease(releases, 'odata', '8.1').semver, '8.1.7');
+  });
+
   test('throws when no matching release exists', () => {
     assert.throws(
       () => findLatestRelease(MOCK_RELEASES, 'odata', '0.0'),
