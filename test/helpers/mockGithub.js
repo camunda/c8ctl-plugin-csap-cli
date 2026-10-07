@@ -25,6 +25,8 @@ function release(tag, displayName) {
 // trimmed to the fields the plugin actually reads. `name` intentionally keeps
 // the real "<Module> <semver>" display format (not equal to the semver).
 export const SAP_CONNECTORS_RELEASES = [
+  release('odata-8.10.1', 'OData 8.10.1'),
+  release('rfc-8.10.1', 'RFC 8.10.1'),
   release('odata-8.9.5', 'OData 8.9.5'),
   release('rfc-8.9.5', 'RFC 8.9.5'),
   release('odata-8.7.2', 'OData 8.7.2'),

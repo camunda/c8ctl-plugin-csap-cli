@@ -18,9 +18,10 @@ import {
 const CAMUNDA_VERSION = '8.9';
 const RELEASE_SEMVER = '8.9.5';
 
-// Covers the connectors on a second, non-latest supported Camunda version
+// Covers the connectors on the latest and on older supported Camunda versions
 // (8.6 is deprecated and intentionally left untested).
 const CAMUNDA_VERSIONS_UNDER_TEST = [
+  { camundaVersion: '8.10', releaseSemver: '8.10.1' },
   { camundaVersion: '8.9', releaseSemver: '8.9.5' },
   { camundaVersion: '8.7', releaseSemver: '8.7.2' },
 ];
@@ -80,37 +81,48 @@ describe('setupHandler — offline e2e (mocked GitHub releases + stubbed git/npm
     });
   }
 
-  test('--for btp-plugin --yes: exits cleanly and produces a deployable .mtar', async (t) => {
-    installGitAndNpmMock(t);
-    const to = mkdtempSync(join(tmpdir(), 'csap-e2e-btp-'));
-    try {
-      await setupHandler(
-        {},
-        {
-          for: 'btp-plugin',
-          camunda: CAMUNDA_VERSION,
-          deployment: 'SaaS',
-          to,
-          btpRoute: 'my-e2e-route.example.org',
-          btpPluginBranch: 'main',
-          ...CREDENTIALS_FLAGS,
-        },
-        { yes: true },
-      );
+  // 8.10 has a two-digit minor, which a naive fixed-length truncation would mangle to 8_1.
+  for (const { camundaVersion, mangledVersion } of [
+    { camundaVersion: '8.10', mangledVersion: '8_10' },
+    { camundaVersion: '8.9', mangledVersion: '8_9' },
+  ]) {
+    test(`--for btp-plugin --camunda ${camundaVersion} --yes: exits cleanly and produces a deployable .mtar`, async (t) => {
+      installGitAndNpmMock(t);
+      const to = mkdtempSync(join(tmpdir(), 'csap-e2e-btp-'));
+      try {
+        await setupHandler(
+          {},
+          {
+            for: 'btp-plugin',
+            camunda: camundaVersion,
+            deployment: 'SaaS',
+            to,
+            btpRoute: 'my-e2e-route.example.org',
+            btpPluginBranch: 'main',
+            ...CREDENTIALS_FLAGS,
+          },
+          { yes: true },
+        );
 
-      const btpDir = join(to, 'sap-btp-plugin');
-      const mtaYaml = readFileSync(join(btpDir, 'mta.yaml'), 'utf-8');
-      assertNoLeftoverPlaceholders(mtaYaml, 'btp-plugin mta.yaml');
-      assert.ok(mtaYaml.includes('my-e2e-route.example.org'), 'mta.yaml missing injected BTP route');
+        const btpDir = join(to, 'sap-btp-plugin');
+        const mtaYaml = readFileSync(join(btpDir, 'mta.yaml'), 'utf-8');
+        assertNoLeftoverPlaceholders(mtaYaml, 'btp-plugin mta.yaml');
+        assert.ok(mtaYaml.includes('my-e2e-route.example.org'), 'mta.yaml missing injected BTP route');
+        assert.match(mtaYaml, new RegExp(`^ID: camunda-btp-plugin-${mangledVersion}$`, 'm'),
+          `mta.yaml ID should use mangled version ${mangledVersion}`);
 
-      const mtaArchives = join(btpDir, 'mta_archives');
-      assert.ok(existsSync(mtaArchives), `expected ${mtaArchives} to exist`);
-      const mtars = readdirSync(mtaArchives).filter((f) => f.endsWith('.mtar'));
-      assert.ok(mtars.length > 0, 'expected at least one .mtar in mta_archives');
-    } finally {
-      rmSync(to, { recursive: true, force: true });
-    }
-  });
+        const xsSecurity = JSON.parse(readFileSync(join(btpDir, 'xs-security.json'), 'utf-8'));
+        assert.strictEqual(xsSecurity.xsappname, `camunda-btp-plugin-${mangledVersion}`);
+
+        const mtaArchives = join(btpDir, 'mta_archives');
+        assert.ok(existsSync(mtaArchives), `expected ${mtaArchives} to exist`);
+        const mtars = readdirSync(mtaArchives).filter((f) => f.endsWith('.mtar'));
+        assert.ok(mtars.length > 0, 'expected at least one .mtar in mta_archives');
+      } finally {
+        rmSync(to, { recursive: true, force: true });
+      }
+    });
+  }
 
   test('--for all --yes: builds odata, rfc, and btp-plugin without colliding resource names', async (t) => {
     installGithubMock(t);
