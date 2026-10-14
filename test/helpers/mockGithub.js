@@ -29,6 +29,8 @@ export const SAP_CONNECTORS_RELEASES = [
   release('rfc-8.10.1', 'RFC 8.10.1'),
   release('odata-8.9.5', 'OData 8.9.5'),
   release('rfc-8.9.5', 'RFC 8.9.5'),
+  release('odata-8.8.5', 'OData 8.8.5'),
+  release('rfc-8.8.5', 'RFC 8.8.5'),
 ];
 
 function readFixtureAsset(url) {

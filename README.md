@@ -210,7 +210,7 @@ Network tests (those that call the GitHub API) are skipped automatically when `G
 
 ### Test coverage
 
-The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against two supported Camunda versions, `8.10` and `8.9`.
+The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against every supported Camunda version (`8.10`, `8.9`, `8.8`), and unsupported versions (e.g. `8.7`) are verified to be rejected before any download or build starts.
 
 `test/c8ctl-cli.e2e.test.js` covers the plugin through the real `c8ctl` binary instead of calling `lib/setup.js` directly — loading it from disk (`c8ctl load plugin --from file://...`), then dispatching `csap-setup`, so plugin registration and flag wiring are covered too. It runs in a sandboxed `HOME`/config dir to avoid touching your real c8ctl installation, and requires `c8ctl` on `PATH`; its network-hitting case additionally requires `GH_TOKEN`. CI installs a pinned `c8ctl` version before running tests (see `.github/workflows/test.yml`). It's skipped on Windows: `c8ctl@3.2.0`'s `load plugin` fails there with `spawnSync npm ENOENT` — an upstream bug in the c8ctl binary, not in this plugin.
 
