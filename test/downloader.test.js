@@ -13,7 +13,7 @@ const MOCK_RELEASES = [
   { tag_name: 'odata-8.8.0', name: 'OData 8.8.0', assets: [] },
   { tag_name: 'odata-8.8.1', name: 'OData 8.8.1', assets: [] },
   { tag_name: 'odata-8.8.2', name: 'OData 8.8.2', assets: [] },
-  { tag_name: 'odata-8.7.3', name: 'OData 8.7.3', assets: [] },
+  { tag_name: 'odata-8.9.3', name: 'OData 8.9.3', assets: [] },
   { tag_name: 'rfc-8.8.0', name: 'RFC 8.8.0', assets: [] },
   { tag_name: 'rfc-8.8.1', name: 'RFC 8.8.1', assets: [] },
 ];
@@ -30,8 +30,8 @@ describe('findLatestRelease', () => {
   });
 
   test('only returns releases for the requested major.minor', () => {
-    const release = findLatestRelease(MOCK_RELEASES, 'odata', '8.7');
-    assert.strictEqual(release.semver, '8.7.3');
+    const release = findLatestRelease(MOCK_RELEASES, 'odata', '8.9');
+    assert.strictEqual(release.semver, '8.9.3');
   });
 
   test('derives a clean semver from tag_name, distinct from the display name', () => {

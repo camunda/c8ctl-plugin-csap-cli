@@ -21,7 +21,7 @@ export const commands = {
       },
       camunda: {
         type: 'string',
-        description: 'Camunda version: 8.6 (deprecated) | 8.7 | 8.8 | 8.9 | 8.10',
+        description: 'Camunda version: 8.8 | 8.9 | 8.10',
       },
       deployment: {
         type: 'string',
@@ -77,8 +77,8 @@ export const metadata = {
         'A GitHub token in GH_TOKEN is recommended to avoid API rate limiting.',
       examples: [
         {
-          command: 'c8ctl csap-setup --for odata --camunda 8.7',
-          description: 'Set up OData connector for Camunda 8.7 interactively',
+          command: 'c8ctl csap-setup --for odata --camunda 8.9',
+          description: 'Set up OData connector for Camunda 8.9 interactively',
         },
         {
           command: 'c8ctl csap-setup --for rfc --camunda 8.9 --deployment SaaS --clusterId abc --region bru-2 --clientId id --clientSecret sec',

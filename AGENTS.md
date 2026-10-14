@@ -92,7 +92,7 @@ c8ctl load plugin --from file://${PWD}
 c8ctl help
 
 # 5. Smoke-test non-interactively (requires env vars or flags; triggers GitHub API)
-GH_TOKEN=<token> c8ctl csap-setup --for odata --camunda 8.7 \
+GH_TOKEN=<token> c8ctl csap-setup --for odata --camunda 8.9 \
   --clusterId <id> --region bru-2 --clientId <cid> --clientSecret <sec>
 ```
 
