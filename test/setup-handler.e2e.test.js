@@ -18,12 +18,11 @@ import {
 const CAMUNDA_VERSION = '8.9';
 const RELEASE_SEMVER = '8.9.5';
 
-// Covers the connectors on the latest and on older supported Camunda versions
-// (8.6 is deprecated and intentionally left untested).
+// Covers the connectors on every supported Camunda version (see CAMUNDA_VERSIONS).
 const CAMUNDA_VERSIONS_UNDER_TEST = [
   { camundaVersion: '8.10', releaseSemver: '8.10.1' },
   { camundaVersion: '8.9', releaseSemver: '8.9.5' },
-  { camundaVersion: '8.7', releaseSemver: '8.7.2' },
+  { camundaVersion: '8.8', releaseSemver: '8.8.5' },
 ];
 
 const CREDENTIALS_FLAGS = {
@@ -75,6 +74,43 @@ describe('setupHandler — offline e2e (mocked GitHub releases + stubbed git/npm
         );
 
         assertConnectorMtad(mtadPathFor(to, 'rfc', camundaVersion, releaseSemver), 'rfc mtad.yaml');
+      } finally {
+        rmSync(to, { recursive: true, force: true });
+      }
+    });
+  }
+
+  // 8.6 and 8.7 are no longer supported; any other unknown value must be rejected too.
+  // `--for all` exercises both the connector (fetch) and BTP (spawnSync) paths.
+  for (const camundaVersion of ['8.7', '8.6', '9.99']) {
+    test(`--for all --camunda ${camundaVersion} --yes: rejects unsupported version before any setup work`, async (t) => {
+      const fetchMock = t.mock.method(globalThis, 'fetch', async () => {
+        throw new Error('fetch must not be called for an unsupported version');
+      });
+      const spawnMock = installGitAndNpmMock(t);
+      const to = mkdtempSync(join(tmpdir(), 'csap-e2e-unsupported-'));
+      try {
+        await assert.rejects(
+          setupHandler(
+            {},
+            {
+              for: 'all',
+              camunda: camundaVersion,
+              deployment: 'SaaS',
+              to,
+              btpRoute: 'my-e2e-route.example.org',
+              btpPluginBranch: 'main',
+              ...CREDENTIALS_FLAGS,
+            },
+            { yes: true },
+          ),
+          {
+            message: `Unsupported Camunda version '${camundaVersion}'. Supported: 8.10, 8.9, 8.8`,
+          },
+        );
+        assert.strictEqual(fetchMock.mock.callCount(), 0, 'expected no GitHub requests');
+        assert.strictEqual(spawnMock.mock.callCount(), 0, 'expected no git/npm invocations');
+        assert.deepStrictEqual(readdirSync(to), [], 'expected no artifacts in target directory');
       } finally {
         rmSync(to, { recursive: true, force: true });
       }

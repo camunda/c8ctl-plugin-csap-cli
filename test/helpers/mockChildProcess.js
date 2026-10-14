@@ -15,9 +15,10 @@ function ok(stdout = '') {
  * out to: `git clone` materializes the recorded sap-btp-plugin fixture tree
  * instead of hitting the network, `git status`/`npm`/`npx` calls no-op, and
  * `npx mbt build` produces a `.mtar` so the downstream existsSync() check passes.
+ * Returns the mock so callers can assert on its call count.
  */
 export function installGitAndNpmMock(t) {
-  t.mock.method(cp, 'spawnSync', (command, args = []) => {
+  return t.mock.method(cp, 'spawnSync', (command, args = []) => {
     if (command === 'git' && args[0] === 'clone') {
       const to = args.at(-1);
       cpSync(BTP_PLUGIN_FIXTURE, to, { recursive: true });

@@ -12,13 +12,13 @@ describe('createBuildDir', () => {
   });
 
   test('returns a version-specific path when camundaVersion is provided', () => {
-    const result = createBuildDir('8.7');
-    assert.ok(result.includes('8.7'));
+    const result = createBuildDir('8.8');
+    assert.ok(result.includes('8.8'));
     assert.ok(result.includes('camunda'));
   });
 
   test('returned path can be created as a directory', () => {
-    const result = createBuildDir('8.7');
+    const result = createBuildDir('8.8');
     mkdirSync(result, { recursive: true });
     assert.ok(statSync(result).isDirectory(), `expected ${result} to be a directory`);
   });

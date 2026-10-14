@@ -71,7 +71,7 @@ c8ctl csap-setup [options]
 | Flag                | Description                                                                    |
 |---------------------|--------------------------------------------------------------------------------|
 | `--for`             | Module to set up: `odata` \| `rfc` \| `btp-plugin` \| `all`                    |
-| `--camunda`         | Camunda version: `8.6` (deprecated) \| `8.7` \| `8.8` \| `8.9` \| `8.10`       |
+| `--camunda`         | Camunda version: `8.8` \| `8.9` \| `8.10`                           |
 | `--deployment`      | Deployment type (currently only `SaaS`)                                        |
 | `--clusterId`       | Camunda Cluster ID                                                             |
 | `--region`          | Camunda Cluster Region (e.g. `bru-2`)                                          |
@@ -89,8 +89,8 @@ All flags are optional. Any value not supplied via a flag is either read from en
 # Interactive setup — prompts for all missing values
 c8ctl csap-setup
 
-# OData connector for Camunda 8.7 — prompts for credentials
-c8ctl csap-setup --for odata --camunda 8.7
+# OData connector for Camunda 8.9 — prompts for credentials
+c8ctl csap-setup --for odata --camunda 8.9
 
 # RFC connector, fully non-interactive
 c8ctl csap-setup --for rfc --camunda 8.9 --deployment SaaS \
@@ -210,7 +210,7 @@ Network tests (those that call the GitHub API) are skipped automatically when `G
 
 ### Test coverage
 
-The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against three supported Camunda versions, `8.10`, `8.9` and `8.7`. `8.6` is deprecated and intentionally left out of this coverage.
+The offline e2e suite (`test/setup-handler.e2e.test.js`) runs the full `setupHandler` flow against mocked GitHub releases for `odata`, `rfc`, `btp-plugin`, and `all`. The connector flows (`odata`, `rfc`) run against every supported Camunda version (`8.10`, `8.9`, `8.8`), and unsupported versions (e.g. `8.7`) are verified to be rejected before any download or build starts.
 
 `test/c8ctl-cli.e2e.test.js` covers the plugin through the real `c8ctl` binary instead of calling `lib/setup.js` directly — loading it from disk (`c8ctl load plugin --from file://...`), then dispatching `csap-setup`, so plugin registration and flag wiring are covered too. It runs in a sandboxed `HOME`/config dir to avoid touching your real c8ctl installation, and requires `c8ctl` on `PATH`; its network-hitting case additionally requires `GH_TOKEN`. CI installs a pinned `c8ctl` version before running tests (see `.github/workflows/test.yml`). It's skipped on Windows: `c8ctl@3.2.0`'s `load plugin` fails there with `spawnSync npm ENOENT` — an upstream bug in the c8ctl binary, not in this plugin.
 
