@@ -25,12 +25,6 @@ Full documentation: [docs.camunda.io › SAP › csap-cli](https://docs.camunda.
 
 ## Installation
 
-### From npm (recommended)
-
-```bash
-c8ctl load plugin c8ctl-plugin-csap-cli
-```
-
 ### From a Git repository
 
 ```bash
